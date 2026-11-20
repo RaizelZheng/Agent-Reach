@@ -1,4 +1,4 @@
-# Rex 的安全定制版（rex-secure 分支）
+# Rex 的安全定制版（agent-reach-rex-secure 分支）
 
 上游：Panniantong/Agent-Reach（v1.6.1 之后的 main，c70ae6d），2026-11-20 复查。
 安装位置：`~/.agent-reach-venv`（Homebrew python@3.12），`/opt/homebrew/bin/agent-reach` 指向它。
