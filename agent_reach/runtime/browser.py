@@ -69,7 +69,11 @@ _LOCK_WAIT = START_WAIT + 30.0
 #: How long Windows setup waits for the user to add the extension from the Web Store.
 _STORE_WAIT = 180.0
 
-OPENCLI_RELEASE_API = "https://api.github.com/repos/jackwener/OpenCLI/releases/latest"
+# REX-SECURE: pinned release + checksum instead of "latest" (the extension runs inside a logged-in browser).
+OPENCLI_RELEASE_API = "https://api.github.com/repos/jackwener/OpenCLI/releases/tags/v2.0.3"
+OPENCLI_EXTENSION_SHA256 = {
+    "opencli-extension-v1.0.27.zip": "8636d42a0fe44d7ba3b0603dbcd9581e8269ccbca950136d0dfc0ffc39a8a213",
+}
 _EXTENSION_ASSET_RE = re.compile(r"^opencli-extension-.*\.zip$")
 _USER_AGENT = "agent-reach"
 
@@ -418,6 +422,11 @@ def refresh_extension(*, upgrade: bool = False) -> dict:
     try:
         archive = work / "extension.zip"
         _download(asset["browser_download_url"], archive)
+        import hashlib  # REX-SECURE: refuse any extension zip we have not pinned
+        want = OPENCLI_EXTENSION_SHA256.get(asset["name"])
+        got = hashlib.sha256(archive.read_bytes()).hexdigest()
+        if not want or got != want:
+            raise ValueError(f"extension checksum not pinned or mismatched: {asset['name']} {got}")
         unpacked = work / "unpacked"
         unpacked.mkdir()
         _unzip(archive, unpacked)

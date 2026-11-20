@@ -943,6 +943,13 @@ def update(check_only: bool = False) -> dict:
     if check_only:
         return info
     method = install_method()
+    # REX-SECURE: Agent Reach itself is updated only from the reviewed fork
+    # (~/Developer/Agent-Reach/rex_update.sh); here we just sync channel tools.
+    if True:
+        synced = sync()
+        return {**info, "upgraded": False, "method": "rex-secure-fork", "sync": synced,
+                "user_actions": synced["user_actions"],
+                "note": "Self-upgrade disabled: run ~/Developer/Agent-Reach/rex_update.sh"}
     if method == "other":
         return _move_to_uv(info)
     if info["update_available"] and method != "editable":

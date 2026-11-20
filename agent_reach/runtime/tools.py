@@ -58,7 +58,7 @@ TOOLS: Dict[str, Tool] = {
         Tool("bili-cli", "pip", "bilibili-cli", ("bili",), tested="0.6.2"),
         Tool(
             "boss-agent-cli", "pip",
-            "boss-agent-cli @ https://github.com/can4hou6joeng4/boss-agent-cli/archive/4c991b77086a203173bf08a4cb64a23af6514fe6.zip",
+            "boss-agent-cli @ https://github.com/can4hou6joeng4/boss-agent-cli/archive/4c991b77086a203173bf08a4cb64a23af6514fe6.zip#sha256=240dfa7d2b7b0093e43735f49ae6d47ee415b7e21fde230075b6d311072bd04f",  # REX-SECURE
             ("boss",),
         ),
         Tool("opencli", "npm", "@jackwener/opencli", ("opencli",), singleton=True, floor="1.8.7", exclude=("1.8.8",), tested="2.0.3", needs=("node",)),
@@ -421,6 +421,11 @@ def _install_node(tool: Tool) -> None:
 
 
 def _install_uv(tool: Tool) -> None:
+    # REX-SECURE: never pipe a remote install script into a shell.
+    raise ReachError(NEED_SETUP, "uv is not installed", hint="Install it yourself: brew install uv")
+
+
+def _install_uv_remote_disabled(tool: Tool) -> None:
     dest = tool_dir("uv") / "bin"
     env = {"UV_INSTALL_DIR": str(dest), "UV_NO_MODIFY_PATH": "1", "INSTALLER_NO_MODIFY_PATH": "1"}
     if _WIN:
